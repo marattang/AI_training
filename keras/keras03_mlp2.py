@@ -24,7 +24,7 @@ model.add(Dense(1))
 # 3. 컴파일 훈련
 model.compile(loss='mse', optimizer='adam')
 
-model.fit(x, y, epochs=1, batch_size=7)
+model.fit(x, y, epochs=2500, batch_size=7)
 
 # 4. 평가, 예측
 x_pred = np.array([[10, 1.3, 1]]) # 3열이 나와야 하기 때문에 []
@@ -35,8 +35,12 @@ result = model.predict(x)
 
 print('loss : ', loss)
 print('10, 1.3, 1의 예측값 : ', result)
-
+print(x[:,0])
 # y, x의 차원 수가 맞지 않아서 산점도가 나오지 않음.
-# plt.scatter(x, y)
-# plt.plot(x, result, color='red')
-# plt.show()
+plt.scatter(x[:,0], y)
+plt.plot(x[:,0], result, color='red')
+plt.scatter(x[:,1], y)
+plt.plot(x[:,1], result, color='red')
+plt.scatter(x[:,2], y)
+plt.plot(x[:,2], result, color='red')
+plt.show()
