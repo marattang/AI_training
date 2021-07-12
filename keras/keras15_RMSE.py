@@ -43,5 +43,3 @@ def RMSE(y_test, y_predict):
 rmse = RMSE(y_test, y_predict)
 
 print("rmse스코어 : ", rmse)
-# 과제 2
-# R2를 0.9 올려라!!!
