@@ -18,8 +18,6 @@ model.add(Dense(7))
 model.add(Dense(3))
 model.add(Dense(1))
 
-
-
 # 3.컴파일
 # model.compile(loss="mse", optimizer='adam', loss_weights=1)
 model.compile(loss=sparse_categorical_crossentropy, optimizer='adam', loss_weights=1)
