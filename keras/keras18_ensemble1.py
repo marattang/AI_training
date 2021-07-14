@@ -57,7 +57,7 @@ model = Model(inputs=[input1, input2], outputs=last_output)
 # 3. 컴파일, 훈련
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae']) # metrics=['mae','mse]
 # 매트릭스를 보면 list로 받아들이고 있기 때문에 2개 이상을 쓰는 것도 가능하다.
-model.fit([x1_train, x2_train], y_train, epochs=380, batch_size=25, verbose=1, validation_split=0.1)
+model.fit([x1_train, x2_train], y_train, epochs=400, batch_size=25, verbose=1, validation_split=0.1)
 
 # # 4. 평가, 예측
 result = model.evaluate([x1_test, x2_test], y_test) # evaluate는 loss와 metrics를 출력한다.
@@ -69,4 +69,5 @@ print('r2 스코어 : ', r2)
 print('loss : ', result[0])
 print('metrics["mae"] : ', result[1])
 
-#r2 스코어 :  0.9914715240776343
+#r2 스코어 :  0.9914715240776343 -> 0.9997684219501827
+# loss 소수점단위까지 낮추기 -> 0.20147289335727692

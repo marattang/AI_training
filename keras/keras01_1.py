@@ -10,7 +10,6 @@ y = np.array([1,2,3])
 model = Sequential()
 model.add(Dense(1, input_dim=1)) 
 # model.add(Dense(output_dim=1, input_dim=1)) 
-
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam') # 컴퓨터가 이해하도록 컴파일
 
@@ -22,3 +21,4 @@ print('loss : ', loss)
 
 result = model.predict([4])
 print('4의 예측값 : ', result)
+model.summary()
