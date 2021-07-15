@@ -20,7 +20,7 @@ model.add(Dense(1))
 
 # 3.컴파일
 # model.compile(loss="mse", optimizer='adam', loss_weights=1)
-model.compile(loss=sparse_categorical_crossentropy, optimizer='adam', loss_weights=1)
+model.compile(loss=mse, optimizer='adam', loss_weights=1)
 model.fit(x, y, epochs=5000, batch_size=1)
 
 # 4. 평가, 예측
