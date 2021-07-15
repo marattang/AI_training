@@ -9,6 +9,10 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler , StandardScaler
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc
+font_path = "C:/Windows/Fonts/gulim.ttc"
+font = font_manager.FontProperties(fname=font_path).get_name()
+rc('font', family=font)
 
 # 데이터를 0 ~ 1사이의 값을 가진 데이터로 전처리를 하고 모델을 돌렸더니 정확도가 올라간다.
 datasets = load_boston()
