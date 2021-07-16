@@ -24,9 +24,11 @@ print(np.unique(y))
 
 y = to_categorical(y)
 print(y.shape)
-print(x.shape)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, shuffle=True, random_state=66)
+
+print(x_train)
+print(x_train.shape)
 
 scaler = PowerTransformer()
 scaler.fit(x_train)
