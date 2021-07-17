@@ -1,26 +1,27 @@
-import numpy as np
+# 완벽한 모델 구성import numpy as np
 import matplotlib.pyplot as plt
-from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
+import numpy as np
 # 1. 데이터
 # 이미 테스트데이터와 트레인 데이터가 분리되어있다.
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
 # print(x_train.shape, y_train.shape) (60000, 28, 28) (60000,) 흑백데이터이기 때문에 3차원
 # print(x_test.shape, y_test.shape)   (10000, 28, 28) (10000,)
 
 # 전처리
-x_train = x_train.reshape(60000, 28, 28, 1)
+x_train = x_train.reshape(50000, 32, 32, 3)
 # 데이터의 내용물과 순서가 바뀌면 안된다.
-x_test = x_test.reshape(10000, 28, 28, 1)
+x_test = x_test.reshape(10000, 32, 32, 3)
 
 print(np.unique(y_train)) # [0 1 2 3 4 5 6 7 8 9]
 print('y_shape : ', y_train.shape)
-y_train = y_train.reshape(60000, 1)
+y_train = y_train.reshape(50000, 1)
 y_test = y_test.reshape(10000, 1)
 encoder = OneHotEncoder()
 y_train = encoder.fit_transform(y_train)
@@ -28,19 +29,19 @@ y_train = np.c_[y_train.toarray()]
 y_test = encoder.fit_transform(y_test)
 y_test = np.c_[y_test.toarray()]
 
-# scaler = PowerTransformer()
+# scaler = MaxAbsScaler()
 # scaler.fit(x_train)
 # x_train = scaler.transform(x_train)
 # x_test = scaler.transform(x_test)
 
 # 2. 모델링
 model = Sequential()
-model.add(Conv2D(filters=240, activation='relu', kernel_size=(1), padding='same', input_shape=(28, 28, 1)))
+model.add(Conv2D(filters=240, activation='relu', kernel_size=(1), padding='same', input_shape=(32, 32, 3)))
 model.add(Conv2D(150, (1), activation='relu', padding='same'))
 model.add(Conv2D(70, (1), activation='relu', padding='same'))
 model.add(Conv2D(50, (1), activation='relu', padding='same'))          # (N, 9, 9, 20)
 model.add(Conv2D(30, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
-model.add(Conv2D(15, (2,2), activation='relu'))                              # (N, 7, 7, 15)
+model.add(Conv2D(15, (2,2), activation='relu'))                              # (N, 3, 3, 15)
 model.add(Flatten())                                      # (N, 135)
 # model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))
