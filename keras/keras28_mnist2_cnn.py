@@ -35,12 +35,11 @@ y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
 model = Sequential()
-model.add(Conv2D(filters=240, activation='relu', kernel_size=(1), padding='same', input_shape=(28, 28, 1)))
+model.add(Conv2D(filters=150, activation='relu', kernel_size=(1), padding='same', input_shape=(28, 28, 1)))
 model.add(Conv2D(150, (1), activation='relu', padding='same'))
-model.add(Conv2D(70, (1), activation='relu', padding='same'))
-model.add(Conv2D(50, (1), activation='relu', padding='same'))          # (N, 9, 9, 20)
-model.add(Conv2D(30, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
-model.add(Conv2D(15, (2,2), activation='relu'))                              # (N, 7, 7, 15)
+model.add(Conv2D(100, (1), activation='relu', padding='same'))
+model.add(Conv2D(80, (1), activation='relu', padding='same'))          # (N, 9, 9, 20)
+model.add(Conv2D(80, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
 model.add(Flatten())                                      # (N, 135)
 # model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))

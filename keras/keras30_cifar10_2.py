@@ -7,6 +7,7 @@ from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, Stan
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
 import numpy as np
+import time
 # 1. 데이터
 # 이미 테스트데이터와 트레인 데이터가 분리되어있다.
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -36,27 +37,36 @@ y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
 model = Sequential()
-model.add(Conv2D(filters=240, activation='relu', kernel_size=(1), padding='same', input_shape=(32, 32, 3)))
-model.add(Conv2D(150, (1), activation='relu', padding='same'))
-model.add(Conv2D(70, (1), activation='relu', padding='same'))
-model.add(Conv2D(50, (1), activation='relu', padding='same'))          # (N, 9, 9, 20)
-model.add(Conv2D(30, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
-model.add(Conv2D(15, (2,2), activation='relu'))                              # (N, 3, 3, 15)
+model.add(Conv2D(filters=150, activation='relu', kernel_size=(2,2), padding='same', input_shape=(32, 32, 3)))
+model.add(Conv2D(150, (2,2), activation='relu', padding='same'))
+model.add(Conv2D(70, (2,2), activation='relu', padding='same'))
+model.add(Conv2D(50, (2,2), activation='relu', padding='same'))          # (N, 9, 9, 20)
+model.add(Conv2D(50, (3,3), padding='same', activation='relu'))             # (N, 8, 8, 30)
+model.add(Conv2D(50, (3,3), activation='relu', padding='same'))                              # (N, 3, 3, 15)
 model.add(Flatten())                                      # (N, 135)
-# model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
 model.add(Dense(128, activation='relu'))
 model.add(Dense(64, activation='relu'))
 model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 es = EarlyStopping(mode='min', monitor='val_loss', patience=15)
-model.fit(x_train, y_train, epochs=500, batch_size=1000, validation_split=0.05, callbacks=[es])
+start = time.time()
+model.fit(x_train, y_train, epochs=500, batch_size=500, validation_split=0.1, callbacks=[es])
+end = time.time() - start
 
+print("걸린시간 : ", end)
 # 4. 평가, 예측 predict X
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss[0])
 print('accuracy : ', loss[1])
+
 # acc로만 평가
+# batch_size 500 validation_split=0.05
+# accuracy :  0.5238999724388123, 걸린시간 :  217.13401818275452
+# accuracy :  0.5625    걸린시간 :  201.15319895744324
+
+# 각 convolution node filter 증가
+# accuracy :  0.6050000190734863, 걸린시간 :  352.5831444263458
