@@ -63,10 +63,11 @@ model = Sequential()
 # model.add(GlobalAveragePooling2D())      
 # model.add(Dense(100, activation='softmax'))
 model.add(Dense(2048, input_shape=(32*32*3,), activation='relu'))
-model.add(Dropout(0.5))
+model.add(Dropout(0.2))
 model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(528, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))
 model.add(Dense(256, activation='relu'))
 model.add(Dense(128, activation='relu'))
@@ -77,7 +78,8 @@ model.add(Dense(100, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=10)
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=500, batch_size=64, validation_split=0.02, callbacks=[es], verbose=1)
+hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.05, verbose=1)
+# hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.1, callbacks=[es], verbose=1)
 end = time.time() - start
 
 # 1
@@ -111,4 +113,4 @@ print('acc : ', loss[1])
 # acc :  0.4796999990940094
 
 # DNN
-# acc :  0.2312999963760376
+# acc :  0.24869999289512634
