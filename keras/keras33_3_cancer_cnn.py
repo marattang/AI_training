@@ -46,7 +46,7 @@ x_test = x_test.reshape(171, 30, 1, 1)
 
 # 3. 컴파일, 훈련
 model = Sequential()
-model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(10, 1, 1)))
+model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(30, 1, 1)))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))

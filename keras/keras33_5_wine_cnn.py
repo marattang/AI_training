@@ -42,7 +42,7 @@ x_test = x_test.reshape(54, 13, 1, 1)
 # 
 
 model = Sequential()
-model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(4, 1, 1)))
+model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(13, 1, 1)))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
