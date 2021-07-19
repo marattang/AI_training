@@ -1,3 +1,11 @@
+# overfit 극복~~
+# 1. 전체 훈련 데이터를 늘린다. 많이 많이 train data가 많으면 많을 수록 오버핏이 준다. -> 실질적으로 불가능한 경우가 많다.
+#  - 증폭시킬려고 해도 비슷한 양으로 증폭되기 때문에 한계가 있다.
+# 2. Normalization : 정규화
+#  - Regulization, Standardzation이랑 헷갈리지 말기. layer값에서 다음 값으로 전달해 줄 때 activation으로 값을 감싸서 다음 layer로 전달해주게 되는데
+#  - 그 값 자체도 Normalize 하지 않다는 얘기다. layer별로도 Normalize해주는 게 어떠냐는 얘기?
+# 3. dropout
+#  - 전체적으로 연결되어있는 레이어의 구성을 Fully Connected layer라고 하는데, 
 # 완벽한 모델 구성import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import cifar100
@@ -41,24 +49,29 @@ y_test = np.c_[y_test.toarray()]
 # 2. 모델링
 model = Sequential()
 model.add(Conv2D(filters=128, activation='relu', kernel_size=(2,2), padding='valid',  input_shape=(32, 32, 3)))
+model.add(Dropout(0.2))
 model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
 model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
+model.add(Dropout(0.2))
 model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
 model.add(MaxPool2D())
 model.add(Conv2D(128, (2,2), activation='relu', padding='valid'))
 model.add(MaxPool2D())
+model.add(Dropout(0.2))
 model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
 model.add(MaxPool2D())
 model.add(Flatten())                              
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(128, activation='relu'))
 model.add(Dense(128, activation='relu'))
 model.add(Dense(100, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
-es = EarlyStopping(mode='auto', monitor='val_loss', patience=4)
+es = EarlyStopping(mode='auto', monitor='val_loss', patience=15)
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=500, batch_size=128, validation_split=0.02, callbacks=[es])
+hist = model.fit(x_train, y_train, epochs=500, batch_size=64, validation_split=0.02, callbacks=[es], verbose=1)
 end = time.time() - start
 
 # 1
@@ -112,3 +125,7 @@ print('acc : ', loss[1])
 # acc :  0.4287000000476837
 # QuantileTransformer
 # acc :  0.4235000014305115
+# Dropout 사용
+# acc :  0.45669999718666077
+# acc :  0.4722000062465668
+# 과적합 해결
