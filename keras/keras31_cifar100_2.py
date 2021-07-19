@@ -39,11 +39,13 @@ y_test = np.c_[y_test.toarray()]
 model = Sequential()
 model.add(Conv2D(filters=100, activation='relu', kernel_size=(2,2),  input_shape=(32, 32, 3)))
 model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
+model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
+model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
 model.add(MaxPool2D())
 model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
+model.add(MaxPool2D())
 model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
-model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
-model.add(Conv2D(100, (2,2), activation='relu', padding='same'))
+model.add(MaxPool2D())
 model.add(Flatten())                              
 model.add(Dense(128, activation='relu'))
 model.add(Dense(128, activation='relu'))
@@ -51,9 +53,9 @@ model.add(Dense(100, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-es = EarlyStopping(mode='auto', monitor='val_loss', patience=2)
+es = EarlyStopping(mode='auto', monitor='val_loss', patience=4)
 start = time.time()
-model.fit(x_train, y_train, epochs=500, batch_size=200, validation_split=0.02, callbacks=[es])
+model.fit(x_train, y_train, epochs=500, batch_size=150, validation_split=0.02, callbacks=[es])
 end = time.time() - start
 
 print("걸린시간 : ", end)
@@ -62,4 +64,4 @@ loss = model.evaluate(x_test, y_test)
 print('loss : ', loss[0])
 print('accuracy : ', loss[1])
 
-# accuracy :  0.3206999897956848
+# accuracy :  0.41670000553131104
