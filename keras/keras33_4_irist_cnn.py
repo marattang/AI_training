@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Conv2D
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Conv2D, Flatten
 from sklearn.metrics import r2_score
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
@@ -54,7 +54,7 @@ model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='val
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
-model.add(GlobalAveragePooling2D())
+model.add(Flatten())
 model.add(Dense(3, activation='softmax'))
 
 # model.add(Dense(128, input_shape=(4, ), activation='relu'))
@@ -66,7 +66,9 @@ model.add(Dense(3, activation='softmax'))
 
 #3. 컴파일, 훈련
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=200, validation_split=0.2, batch_size=45)
+print(x_train.shape)
+print(y_train.shape)
+model.fit(x_train, y_train, epochs=200, validation_split=0.1, batch_size=45)
 
 # 4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
@@ -76,3 +78,6 @@ print('accuracy : ', loss[1])
 
 # DNN
 # accuracy :  0.9111111164093018
+
+# CNN
+# accuracy :  1.0

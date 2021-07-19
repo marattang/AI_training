@@ -2,7 +2,7 @@
 import numpy as np
 from sklearn import metrics
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Conv2D
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Conv2D, Flatten
 from sklearn.metrics import r2_score
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
@@ -17,7 +17,7 @@ datasets = load_boston()
 x = datasets.data
 y = datasets.target
 print(x.shape)
-x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=20, train_size=0.7, shuffle=True)
+x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=10, train_size=0.7, shuffle=True)
 
 scaler = RobustScaler()
 scaler.fit(x_train) 
@@ -36,18 +36,20 @@ model = Sequential()
 # model.add(Dense(64, activation='relu'))
 # model.add(Dense(64, activation='relu'))
 # model.add(Dense(64, activation='relu'))
-model.add(Conv2D(filters=256, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(13, 1, 1)))
+model.add(Conv2D(filters=64, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(13, 1, 1)))
 model.add(Dropout(0.2))
-model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1)))
-model.add(Conv2D(filters=64, activation='relu', kernel_size=(1,1)))
 model.add(Conv2D(filters=32, activation='relu', kernel_size=(1,1)))
+model.add(Dropout(0.1))
 model.add(Conv2D(filters=16, activation='relu', kernel_size=(1,1)))
-model.add(GlobalAveragePooling2D())
+model.add(Flatten())
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))
 
 model.compile(loss="mse", optimizer="adam", loss_weights=1, metrics=['mae'])
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=15)
-hist = model.fit(x_train, y_train, epochs=1200, batch_size=5, validation_split=0.05, callbacks=[es])
+# hist = model.fit(x_train, y_train, epochs=250, batch_size=1, validation_split=0.05, callbacks=[es])
+hist = model.fit(x_train, y_train, epochs=250, batch_size=1, validation_split=0.05)
 
 # 1
 plt.subplot(2,1,1)
@@ -60,15 +62,15 @@ plt.xlabel('epoch')
 plt.legend(loc='upper right')
 
 # 2
-plt.subplot(2, 1, 2)
-plt.plot(hist.history['mae'])
-plt.plot(hist.history['val_mae'])
-plt.grid()
-plt.title('mae')
-plt.ylabel('mae')
-plt.xlabel('epoch')
-plt.legend(['mae', 'val_mae'])
-plt.show()
+# plt.subplot(2, 1, 2)
+# plt.plot(hist.history['mae'])
+# plt.plot(hist.history['val_mae'])
+# plt.grid()
+# plt.title('mae')
+# plt.ylabel('mae')
+# plt.xlabel('epoch')
+# plt.legend(['mae', 'val_mae'])
+# plt.show()
 
 
 loss = model.evaluate(x_test, y_test)
@@ -83,5 +85,4 @@ print('r2 score : ', r2)
 # r2 score :  0.8773921354087534
 # 보통 0.82 ~ 0.87
 # CNN
-# r2 score :  0.38696311110913495
-# r2 score :  0.34668385029217896
+# r2 score :  0.8672195763003268

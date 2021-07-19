@@ -3,11 +3,12 @@ from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, GlobalAveragePooling2D
+from tensorflow.keras.layers import Dense, Conv2D, GlobalAveragePooling2D, Flatten
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer
 import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping
 from matplotlib import font_manager, rc
+from tensorflow.python.keras.layers.core import Dropout
 font_path = "C:/Windows/Fonts/gulim.ttc"
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
@@ -45,8 +46,9 @@ model = Sequential()
 model.add(Conv2D(filters=128, activation='relu', kernel_size=(1,1), padding='valid', input_shape=(13, 1, 1)))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
 model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
-model.add(Conv2D(64, kernel_size=(1,1), activation='relu'))
-model.add(GlobalAveragePooling2D())
+model.add(Flatten())
+model.add(Dropout(0.1))
+model.add(Dense(32, activation='relu'))
 model.add(Dense(3, activation='softmax'))
 
 
@@ -54,15 +56,15 @@ model.add(Dense(3, activation='softmax'))
 es = EarlyStopping(monitor='val_loss', mode='min', patience=15)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 # hist = model.fit(x_train, y_train, batch_size=32, epochs=500, validation_split=0.1, callbacks=[es])
-hist = model.fit(x_train, y_train, batch_size=32, epochs=500, validation_split=0.1)
+hist = model.fit(x_train, y_train, batch_size=1, epochs=50, validation_split=0.05)
 
-plt.plot(hist.history['loss'])      # x: epoch, y: hist.history['loss']
-plt.plot(hist.history['val_loss'])
+# plt.plot(hist.history['loss'])      # x: epoch, y: hist.history['loss']
+# plt.plot(hist.history['val_loss'])
 
-plt.xlabel('epochs')
-plt.ylabel('loss, val_loss')
-plt.title('로스, 발로스')
-plt.show()
+# plt.xlabel('epochs')
+# plt.ylabel('loss, val_loss')
+# plt.title('로스, 발로스')
+# plt.show()
 
 #
 loss = model.evaluate(x_test, y_test)
@@ -78,4 +80,4 @@ print('accuracy : ', loss[1])
 # PowerTransformer - accuracy :  0.9814814925193787
 
 # CNN
-# accuracy :  0.8333333134651184
+# accuracy :  0.9814814925193787
