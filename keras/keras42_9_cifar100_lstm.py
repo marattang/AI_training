@@ -10,7 +10,7 @@
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D, LSTM
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
@@ -32,6 +32,10 @@ scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
+x_train = x_train.reshape(50000, 32 * 32, 3)
+# 데이터의 내용물과 순서가 바뀌면 안된다.
+x_test = x_test.reshape(10000, 32 * 32, 3)
+
 # x_train = x_train.reshape(50000, 32, 32, 3)
 # 데이터의 내용물과 순서가 바뀌면 안된다.
 # x_test = x_test.reshape(10000, 32, 32, 3)
@@ -47,7 +51,39 @@ y_test = encoder.fit_transform(y_test)
 y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
+# RNN
 model = Sequential()
+model.add(LSTM(8, input_shape=(32*32,3), activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(100, activation='softmax'))
+
+
+
+# DNN
+# model = Sequential()
+# model.add(Dense(528, input_shape=(32*32,3), activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(528, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(100, activation='softmax'))
+
+
+# CNN
+# model = Sequential()
 # model.add(Conv2D(filters=128, activation='relu', kernel_size=(2,2), padding='valid',  input_shape=(32, 32, 3)))
 # model.add(Dropout(0.2))
 # model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
@@ -62,23 +98,12 @@ model = Sequential()
 # model.add(MaxPool2D())
 # model.add(GlobalAveragePooling2D())      
 # model.add(Dense(100, activation='softmax'))
-model.add(Dense(528, input_shape=(32*32*3,), activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(528, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(100, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=10)
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.05, verbose=1)
+hist = model.fit(x_train, y_train, epochs=100, batch_size=512, validation_split=0.05, verbose=1)
 # hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.1, callbacks=[es], verbose=1)
 end = time.time() - start
 
@@ -114,3 +139,7 @@ print('acc : ', loss[1])
 
 # DNN
 # acc :  0.24869999289512634
+
+# RNN
+# 걸린시간 :  16371.976346969604 4시간 32분;
+# acc :  0.050200000405311584
