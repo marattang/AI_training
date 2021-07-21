@@ -2,11 +2,11 @@ import numpy as np
 from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.models import Model, load_model, Sequential
 from tensorflow.keras.layers import Dense, Conv2D, GlobalAveragePooling2D, Flatten, LSTM
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer
 import matplotlib.pyplot as plt
-from tensorflow.keras.callbacks import EarlyStopping
 from matplotlib import font_manager, rc
 from tensorflow.python.keras.layers.core import Dropout
 font_path = "C:/Windows/Fonts/gulim.ttc"
@@ -19,17 +19,17 @@ dataset = load_wine()
 x = dataset.data
 y = dataset.target
 
-print(dataset.DESCR)
-print(dataset.feature_names)
-print(np.unique(y))
+# print(dataset.DESCR)
+# print(dataset.feature_names)
+# print(np.unique(y))
 
 y = to_categorical(y)
-print(y.shape)
+# print(y.shape)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, shuffle=True, random_state=66)
 
-print(x_train)
-print(x_train.shape)
+# print(x_train)
+# print(x_train.shape)
 
 scaler = PowerTransformer()
 scaler.fit(x_train)
@@ -55,18 +55,15 @@ model.add(Dense(3, activation='softmax'))
 
 
 #
+cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_5_MCP.hdf', save_best_only=True)
 es = EarlyStopping(monitor='val_loss', mode='min', patience=15)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-# hist = model.fit(x_train, y_train, batch_size=32, epochs=500, validation_split=0.1, callbacks=[es])
-hist = model.fit(x_train, y_train, batch_size=1, epochs=70, validation_split=0.05)
 
-# plt.plot(hist.history['loss'])      # x: epoch, y: hist.history['loss']
-# plt.plot(hist.history['val_loss'])
+# model.fit(x_train, y_train, batch_size=1, epochs=70, validation_split=0.05, callbacks=[es, cp])
 
-# plt.xlabel('epochs')
-# plt.ylabel('loss, val_loss')
-# plt.title('로스, 발로스')
-# plt.show()
+# model.save('./_save/ModelCheckPoint/keras48_5_model.h5')
+# model =load_model('./_save/ModelCheckPoint/keras48_5_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_5_MCP.hdf')
 
 #
 loss = model.evaluate(x_test, y_test)
@@ -88,3 +85,15 @@ print('accuracy : ', loss[1])
 # epochs 50 -> 70
 # 하이퍼 파라미터 작업 후
 # accuracy :  0.9444444179534912 -> accuracy :  1.0
+
+# model
+# loss :  0.5563445091247559
+# accuracy :  0.9444444179534912
+
+# load model
+#loss :  0.5563445091247559
+# accuracy :  0.9444444179534912
+
+# check point
+# loss :  0.1959742158651352
+# accuracy :  0.9074074029922485

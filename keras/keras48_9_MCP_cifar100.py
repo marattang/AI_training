@@ -9,10 +9,10 @@
 # 완벽한 모델 구성import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import cifar100
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D, LSTM
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.models import Model, load_model, Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D, LSTM, GlobalAveragePooling2D
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
-from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
 import numpy as np
 import time
@@ -32,9 +32,9 @@ scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-x_train = x_train.reshape(50000, 32 * 32, 3)
+x_train = x_train.reshape(50000, 32, 32, 3)
 # 데이터의 내용물과 순서가 바뀌면 안된다.
-x_test = x_test.reshape(10000, 32 * 32, 3)
+x_test = x_test.reshape(10000, 32, 32, 3)
 
 # x_train = x_train.reshape(50000, 32, 32, 3)
 # 데이터의 내용물과 순서가 바뀌면 안된다.
@@ -52,18 +52,18 @@ y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
 # RNN
-model = Sequential()
-model.add(LSTM(8, input_shape=(32*32,3), activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(100, activation='softmax'))
+# model = Sequential()
+# model.add(LSTM(8, input_shape=(32*32,3), activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(100, activation='softmax'))
 
 
 
@@ -83,50 +83,34 @@ model.add(Dense(100, activation='softmax'))
 
 
 # CNN
-# model = Sequential()
-# model.add(Conv2D(filters=128, activation='relu', kernel_size=(2,2), padding='valid',  input_shape=(32, 32, 3)))
-# model.add(Dropout(0.2))
-# model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
-# model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
-# model.add(Dropout(0.2))
-# model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
-# model.add(MaxPool2D())
-# model.add(Conv2D(128, (2,2), activation='relu', padding='valid'))
-# model.add(MaxPool2D())
-# model.add(Dropout(0.2))
-# model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
-# model.add(MaxPool2D())
-# model.add(GlobalAveragePooling2D())      
-# model.add(Dense(100, activation='softmax'))
+model = Sequential()
+model.add(Conv2D(filters=128, activation='relu', kernel_size=(2,2), padding='valid',  input_shape=(32, 32, 3)))
+model.add(Dropout(0.2))
+model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
+model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
+model.add(Dropout(0.2))
+model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
+model.add(MaxPool2D())
+model.add(Conv2D(128, (2,2), activation='relu', padding='valid'))
+model.add(MaxPool2D())
+model.add(Dropout(0.2))
+model.add(Conv2D(64, (2,2), activation='relu', padding='same'))
+model.add(MaxPool2D())
+model.add(GlobalAveragePooling2D())      
+model.add(Dense(100, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
+
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=5)
+cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_9_MCP.hdf', save_best_only=True)
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=100, batch_size=512, validation_split=0.05, verbose=1)
-# hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.1, callbacks=[es], verbose=1)
+# model.fit(x_train, y_train, epochs=100, batch_size=512, validation_split=0.05, verbose=1, callbacks=[es, cp])
+# model.save('./_save/ModelCheckPoint/keras48_9_model.h5')
+# model =load_model('./_save/ModelCheckPoint/keras48_9_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_9_MCP.hdf')
+
 end = time.time() - start
-
-# 1
-plt.subplot(2,1,1)
-plt.plot(hist.history['loss'], marker='.', c='red', label='loss')
-plt.plot(hist.history['val_loss'], marker='.', c='blue', label='val_loss')
-plt.grid()
-plt.title('loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(loc='upper right')
-
-# 2
-plt.subplot(2, 1, 2)
-plt.plot(hist.history['acc'])
-plt.plot(hist.history['val_acc'])
-plt.grid()
-plt.title('acc')
-plt.ylabel('acc')
-plt.xlabel('epoch')
-plt.legend(['acc', 'val_acc'])
-plt.show()
 
 print("걸린시간 : ", end)
 # 4. 평가, 예측 predict X
@@ -145,3 +129,15 @@ print('acc : ', loss[1])
 # acc :  0.050200000405311584
 # 시간이 너무 오래걸려서 Early Stopping patience감소
 # 
+
+# model
+# loss :  2.101635217666626
+# acc :  0.4657999873161316
+
+# load model
+# loss :  2.101635217666626
+# acc :  0.4657999873161316
+
+# check point
+# loss :  2.0895752906799316
+# acc :  0.45660001039505005

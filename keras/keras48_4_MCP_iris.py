@@ -1,12 +1,12 @@
 import numpy as np
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Conv2D, Flatten, LSTM, Dropout
 from sklearn.metrics import r2_score
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler , StandardScaler, PowerTransformer
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import matplotlib.pyplot as plt
 from tensorflow.keras.utils import to_categorical
 from tensorflow.python.keras.layers.core import Dropout
@@ -47,32 +47,41 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 print(x_train.shape)
 print(x_test.shape)
-x_train = x_train.reshape(105, 4, 1)
-x_test = x_test.reshape(45, 4, 1)
+# x_train = x_train.reshape(105, 4, 1)
+# x_test = x_test.reshape(45, 4, 1)
 #2. 모델구성
-model = Sequential()
-model.add(LSTM(64, input_shape=(4, 1)))
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(3, activation='softmax'))
-
-# model.add(Dense(128, input_shape=(4, ), activation='relu'))
+# model = Sequential()
+# model.add(LSTM(64, input_shape=(4, 1)))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dropout(0.2))
 # model.add(Dense(64, activation='relu'))
 # model.add(Dense(64, activation='relu'))
+# model.add(Dense(32, activation='relu'))
 # model.add(Dense(32, activation='relu'))
 # model.add(Dense(16, activation='relu'))
 # model.add(Dense(3, activation='softmax'))
 
+model = Sequential()
+model.add(Dense(128, input_shape=(4, ), activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
+model.add(Dense(3, activation='softmax'))
+
 #3. 컴파일, 훈련
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+
 print(x_train.shape)
 print(y_train.shape)
-model.fit(x_train, y_train, epochs=200, validation_split=0.1, batch_size=1)
+cp = ModelCheckpoint(filepath='./_save/ModelCheckPoint/keras48_4_MCP.hdf', mode='auto', monitor='val_loss', save_best_only=True)
+es = EarlyStopping(mode='auto', monitor='val_loss', patience=5)
+# model.fit(x_train, y_train, epochs=200, validation_split=0.1, batch_size=1, callbacks=[es, cp])
+
+# model.save('./_save/ModelCheckPoint/keras48_4_model.h5')
+# model =load_model('./_save/ModelCheckPoint/keras48_4_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_4_MCP.hdf')
 
 # 4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
@@ -90,4 +99,16 @@ print('accuracy : ', loss[1])
 # batch 45
 # accuracy :  0.9777777791023254
 # batch 1 : 하이퍼 파라미터 작업 후
+# accuracy :  1.0
+
+# model
+# loss :  0.025621196255087852
+# accuracy :  0.9777777791023254
+
+# load model
+# loss :  0.025621196255087852
+# accuracy :  0.9777777791023254
+
+# check point
+# loss :  0.00764505984261632
 # accuracy :  1.0

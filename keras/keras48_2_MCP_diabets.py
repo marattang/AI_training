@@ -47,15 +47,16 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle=True, random_s
 
 model.compile(loss='mse', optimizer='adam')
 
-cp = ModelCheckpoint(monitor='val_loss', save_best_only=True, mode='auto', 
-                    filepath='./_save/ModelCheckPoint/keras47_MCP.hdf5')
+cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_2_MCP.hdf', save_best_only=True)
+
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=15)
 start_time = time.time()
-model.fit(x_train, y_train, epochs=80, validation_split=0.1, batch_size=45, callbacks=[es, cp])
+# model.fit(x_train, y_train, epochs=80, validation_split=0.1, batch_size=45, callbacks=[es, cp])
 end_time = time.time() - start_time
 # model.save('./_save/ModelCheckPoint/keras48_2_model.h5')
-# model =load_model('./_save/ModelCheckPoint/keras48_2_model.h5')
-model = load_model('./_save/ModelCheckPoint/keras48_2_MCP.h5')
+
+model =load_model('./_save/ModelCheckPoint/keras48_2_model.h5')
+# model = load_model('./_save/ModelCheckPoint/keras48_2_MCP.hdf')
 
 #4. 평가, 예측
 # mse, R2
@@ -74,12 +75,13 @@ print('r2 score : ', r2)
 
 
 # Model
-# loss :  2184.603515625
-# r2 score :  0.6046877163745609
+# loss :  2206.321044921875
+# r2 score :  0.6007578477571751
 
 # check point
-# r2 score :  0.550725570595451 = 오히려 떨어짐
+# loss :  2498.267822265625
+# r2 score :  0.5479289551419319
 
-# model
-# loss :  2184.603515625
-# r2 score :  0.6046877163745609
+# load model
+# loss :  2206.321044921875
+# r2 score :  0.6007578477571751

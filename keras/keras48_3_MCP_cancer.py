@@ -1,11 +1,11 @@
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 from tensorflow.keras.layers import Dense, Input, GlobalAveragePooling2D, Conv2D, Flatten, Dropout
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, QuantileTransformer, PowerTransformer
 import matplotlib.pyplot as plt
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.python.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 
@@ -52,14 +52,30 @@ model.add(Dense(2, activation='softmax'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # metrics에 들어간 건 결과에 반영되지 않고 보여주기만 한다.
-es = EarlyStopping(mode='min', monitor='val_loss', patience=5)
 
+es = EarlyStopping(mode='min', monitor='val_loss', patience=5)
+cp = ModelCheckpoint(filepath='./_save/ModelCheckPoint/keras48_3_MCP.hdf', mode='auto', monitor='val_loss', save_best_only=True)
 print(x_train.shape)
 print(y_train.shape)
-model.fit(x_train, y_train, batch_size=1, epochs=100, validation_split=0.1, callbacks=[es])
+# model.fit(x_train, y_train, batch_size=1, epochs=100, validation_split=0.1, callbacks=[es, cp])
+
+# model.save('./_save/ModelCheckPoint/keras48_3_model.h5')
+# model =load_model('./_save/ModelCheckPoint/keras48_3_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_3_MCP.hdf')
 
 # 평가, 예측
 loss = model.evaluate(x_test, y_test) # evaluate는 loss과 metrics도 반환한다. binary_crossentropy의 loss, accuracy의 loss
 print('loss : ', loss[0])
 print('accuracy : ', loss[1])
-# accuracy :  0.988304078578949
+
+# model
+# loss :  0.09837134182453156
+# accuracy :  0.9590643048286438
+
+# load_model
+# loss :  0.09837134182453156
+# accuracy :  0.9590643048286438
+
+# check point
+# loss :  0.06850314885377884
+# accuracy :  0.9766082167625427

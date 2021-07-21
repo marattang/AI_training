@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.models import Model, load_model, Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, GlobalAveragePooling1D
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
-from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
 import time
 # 1. 데이터
@@ -67,11 +67,18 @@ model.add(Dense(10, activation='softmax'))
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
 es = EarlyStopping(mode='min', monitor='val_loss', patience=15)
+cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_6_MCP.hdf', save_best_only=True)
 start = time.time()
-model.fit(x_train, y_train, epochs=500, batch_size=64, validation_split=0.05, callbacks=[es])
+# model.fit(x_train, y_train, epochs=500, batch_size=64, validation_split=0.05, callbacks=[es, cp])
 end = time.time() - start
 print('걸린시간 : ', end)
+
+# model.save('./_save/ModelCheckPoint/keras48_6_model.h5')
+# model =load_model('./_save/ModelCheckPoint/keras48_6_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_6_MCP.hdf')
+
 
 # 4. 평가, 예측 predict X
 loss = model.evaluate(x_test, y_test)
@@ -91,3 +98,15 @@ print('accuracy : ', loss[1])
 # accuracy :  0.9801999926567078
 # batch size 감소 node 증가
 # accuracy :  0.9847999811172485
+
+# model
+# loss :  0.10130423307418823
+# accuracy :  0.9843000173568726
+
+# load model
+# loss :  0.10130423307418823
+# accuracy :  0.9843000173568726
+
+# check point
+# loss :  0.08582410216331482
+# accuracy :  0.9832000136375427

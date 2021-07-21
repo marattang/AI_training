@@ -35,12 +35,13 @@ model.add(Dense(1))
 es = EarlyStopping(monitor='val_loss', mode='auto', patience=10)
 cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_1_MCP.hdf', save_best_only=True)
 model.compile(loss="mse", optimizer="adam", loss_weights=1)
-model.fit(x_train, y_train, epochs=350, batch_size=32, validation_split=0.1, callbacks=[es, cp])
 
+# model.fit(x_train, y_train, epochs=350, batch_size=32, validation_split=0.1, callbacks=[es, cp])
+
+model = load_model('./_save/ModelCheckPoint/keras48_1_MCP.hdf')
+# model = load_model('./_save/ModelCheckPoint/keras48_1_model.h5')
 # model.save('./_save/ModelCheckPoint/keras48_1_model.h5')
 
-# model = load_model('./_save/ModelCheckPoint/keras48_1_model.h5')
-model = load_model('./_save/ModelCheckPoint/keras48_1_MCP.hdf')
 
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
@@ -53,6 +54,13 @@ print('r2 score : ', r2)
 # r2 score :  0.8603100281026542
 
 # model
-# r2 score :  0.8603100281026542
+# loss :  18.435073852539062
+# r2 score :  0.7839444071360016
+
+# load model
+# loss :  18.435073852539062
+# r2 score :  0.7839444071360016
 
 # check point
+# loss :  14.674086570739746
+# r2 score :  0.8280224872670748

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import fashion_mnist
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.models import Model, load_model, Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, GlobalAveragePooling1D, LSTM
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
-from tensorflow.keras.callbacks import EarlyStopping
 import time
 
 from tensorflow.python.keras.layers.core import Dropout
@@ -36,25 +36,25 @@ scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
-x_train = x_train.reshape(60000, 28 * 28, 1)
-x_test = x_test.reshape(10000, 28 * 28, 1)
+x_train = x_train.reshape(60000, 28, 28, 1)
+x_test = x_test.reshape(10000, 28, 28, 1)
 
 # 2. 모델링
 model = Sequential()
 
 # CNN
-# model.add(Conv2D(filters=240, activation='relu', kernel_size=(2,2), padding='same', input_shape=(28, 28, 1)))
-# model.add(Conv2D(120, (2,2), activation='relu', padding='same'))          # (N, 9, 9, 20)
-# model.add(Conv2D(50, (2,2), activation='relu', padding='same'))          # (N, 9, 9, 20)
-# model.add(Conv2D(30, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
-# model.add(Conv2D(15, (1), activation='relu', padding='same'))                              # (N, 3, 3, 15)
-# model.add(Flatten())                                      # (N, 135)
-# model.add(Dense(256, activation='relu'))
-# model.add(Dense(128, activation='relu'))
-# model.add(Dense(64, activation='relu'))
-# model.add(Dense(32, activation='relu'))
-# model.add(Dense(16, activation='relu'))
-# model.add(Dense(10, activation='softmax'))
+model.add(Conv2D(filters=240, activation='relu', kernel_size=(2,2), padding='same', input_shape=(28, 28, 1)))
+model.add(Conv2D(120, (2,2), activation='relu', padding='same'))          # (N, 9, 9, 20)
+model.add(Conv2D(50, (2,2), activation='relu', padding='same'))          # (N, 9, 9, 20)
+model.add(Conv2D(30, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
+model.add(Conv2D(15, (1), activation='relu', padding='same'))                              # (N, 3, 3, 15)
+model.add(Flatten())                                      # (N, 135)
+model.add(Dense(256, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
+model.add(Dense(10, activation='softmax'))
 
 # DNN
 # model.add(Dense(528, input_shape=(28 * 28, ), activation='relu'))
@@ -67,26 +67,32 @@ model = Sequential()
 # model.add(Dense(10, activation='softmax'))
 
 # RNN
-model.add(LSTM(16, input_shape=(28 * 28, 1), activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+# model.add(LSTM(16, input_shape=(28 * 28, 1), activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(64, activation='relu'))
+# model.add(Dense(64, activation='relu'))
+# model.add(Dense(32, activation='relu'))
+# model.add(Dense(32, activation='relu'))
+# model.add(Dense(10, activation='softmax'))
 
 model.summary
 
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
 es = EarlyStopping(mode='min', monitor='val_loss', patience=5)
+cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_7_MCP.hdf', save_best_only=True)
 start = time.time()
-model.fit(x_train, y_train, epochs=500, batch_size=512, validation_split=0.05, callbacks=[es])
-# model.fit(x_train, y_train, epochs=50, batch_size=500, validation_split=0.1)
+# model.fit(x_train, y_train, epochs=500, batch_size=512, validation_split=0.05, callbacks=[es, cp])
+model =load_model('./_save/ModelCheckPoint/keras48_7_model.h5')
+# model = load_model('./_save/ModelCheckPoint/keras48_7_MCP.hdf')
 end = time.time() - start
+
+# model.save('./_save/ModelCheckPoint/keras48_7_model.h5')
+
 
 print('걸린시간 : ', end)
 # 4. 평가, 예측 predict X
@@ -101,3 +107,15 @@ print('accuracy : ', loss[1])
 # RNN
 # Epochs 16회 전까지는 서서히 증가하다 val_loss가 nan값이 나오면서 accuracy 0.41 -> 0.1로 감소
 # accuracy :  0.10000000149011612
+
+# model
+# loss :  0.3453387916088104
+# accuracy :  0.9063000082969666
+
+# load model
+# loss :  0.3453387916088104
+# accuracy :  0.9063000082969666
+
+# check point
+# loss :  0.2757481634616852
+# accuracy :  0.9024999737739563
