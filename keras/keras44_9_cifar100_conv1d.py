@@ -10,7 +10,7 @@
 import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D, LSTM
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, MaxPool2D, GlobalAveragePooling1D, LSTM, Conv1D
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, RobustScaler, StandardScaler, PowerTransformer, QuantileTransformer, OneHotEncoder
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers.core import Dropout
@@ -52,18 +52,18 @@ y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
 # RNN
-model = Sequential()
-model.add(LSTM(8, input_shape=(32*32,3), activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(100, activation='softmax'))
+# model = Sequential()
+# model.add(LSTM(8, input_shape=(32*32,3), activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(100, activation='softmax'))
 
 
 
@@ -99,12 +99,28 @@ model.add(Dense(100, activation='softmax'))
 # model.add(GlobalAveragePooling2D())      
 # model.add(Dense(100, activation='softmax'))
 
+model = Sequential()
+model.add(Conv1D(256, 4, input_shape=(32*32,3), activation='relu'))
+model.add(Conv1D(64, 4, activation='relu'))
+model.add(Conv1D(32, 4, activation='relu'))
+model.add(Flatten())
+model.add(Dropout(0.2))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(100, activation='softmax'))
+
 # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=5)
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=100, batch_size=512, validation_split=0.05, verbose=1)
-# hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.1, callbacks=[es], verbose=1)
+# hist = model.fit(x_train, y_train, epochs=50, batch_size=512, validation_split=0.05, verbose=1)
+hist = model.fit(x_train, y_train, epochs=100, batch_size=64, validation_split=0.1, callbacks=[es], verbose=1)
 end = time.time() - start
 
 # 1
@@ -144,4 +160,6 @@ print('acc : ', loss[1])
 # 걸린시간 :  16371.976346969604 4시간 32분;
 # acc :  0.050200000405311584
 # 시간이 너무 오래걸려서 Early Stopping patience감소
-# 
+
+# Conv1d
+# acc :  0.25940001010894775

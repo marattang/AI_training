@@ -14,9 +14,9 @@ from tensorflow.python.keras.layers.core import Dropout
 # print(x_test.shape, y_test.shape)   (10000, 28, 28) (10000,)
 
 # 전처리
-x_train = x_train.reshape(60000, 28, 28, 1)
 # 데이터의 내용물과 순서가 바뀌면 안된다.
-x_test = x_test.reshape(10000, 28, 28, 1)
+# x_train = x_train.reshape(60000, 28, 28, 1)
+# x_test = x_test.reshape(10000, 28, 28, 1)
 
 print(np.unique(y_train)) # [0 1 2 3 4 5 6 7 8 9]
 print('y_shape : ', y_train.shape)
@@ -35,28 +35,27 @@ y_test = np.c_[y_test.toarray()]
 
 # 2. 모델링
 model = Sequential()
-model.add(Conv2D(filters=150, activation='relu', kernel_size=(1), padding='same', input_shape=(28, 28, 1)))
-model.add(Conv2D(150, (1), activation='relu', padding='same'))
-model.add(Conv2D(100, (1), activation='relu', padding='same'))
-model.add(Conv2D(80, (1), activation='relu', padding='same'))          # (N, 9, 9, 20)
-model.add(Conv2D(80, (2,2), padding='same', activation='relu'))             # (N, 8, 8, 30)
-model.add(Flatten())                                      # (N, 135)
-# model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
+model.add(Dense(units=10, activation='relu', input_shape=(28, 28)))
+model.add(Flatten())
+model.add(Dense(9, activation='relu'))
+model.add(Dense(8, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
-# 3. 컴파일, 훈련       metrics['acc']
+model.summary()
+
+# # 3. 컴파일, 훈련       metrics['acc']
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 es = EarlyStopping(mode='min', monitor='val_loss', patience=15)
 model.fit(x_train, y_train, epochs=500, batch_size=1000, validation_split=0.05, callbacks=[es])
 
-# 4. 평가, 예측 predict X
+# # 4. 평가, 예측 predict X
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss[0])
 print('accuracy : ', loss[1])
 # acc로만 평가
-
+# cnn
 # accuracy :  0.9782000184059143
+
+# DNN
+# loss :  0.25008904933929443
+# accuracy :  0.9352999925613403
