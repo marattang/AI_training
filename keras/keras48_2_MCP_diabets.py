@@ -47,7 +47,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle=True, random_s
 
 model.compile(loss='mse', optimizer='adam')
 
-cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_2_MCP.hdf', save_best_only=True)
+cp = ModelCheckpoint(monitor='val_accuracy', mode='max', filepath='./_save/ModelCheckPoint/keras48_2_MCP.hdf', save_best_only=True)
 
 es = EarlyStopping(mode='auto', monitor='val_loss', patience=15)
 start_time = time.time()
@@ -55,8 +55,8 @@ start_time = time.time()
 end_time = time.time() - start_time
 # model.save('./_save/ModelCheckPoint/keras48_2_model.h5')
 
-model =load_model('./_save/ModelCheckPoint/keras48_2_model.h5')
-# model = load_model('./_save/ModelCheckPoint/keras48_2_MCP.hdf')
+# model =load_model('./_save/ModelCheckPoint/keras48_2_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_2_MCP.hdf')
 
 #4. 평가, 예측
 # mse, R2
@@ -75,13 +75,25 @@ print('r2 score : ', r2)
 
 
 # Model
-# loss :  2206.321044921875
-# r2 score :  0.6007578477571751
+# loss :  2252.693359375
+# r2 score :  0.5923666541122166
 
 # check point
 # loss :  2498.267822265625
 # r2 score :  0.5479289551419319
 
-# load model
+# load model : 
 # loss :  2206.321044921875
 # r2 score :  0.6007578477571751
+
+# Model-2
+# loss :  2254.41455078125
+# r2 score :  0.5920551547030609
+
+# check point-2
+# loss :  2509.532958984375
+# r2 score :  0.5458904988364524
+
+# load model-2 : 
+# loss :  2254.41455078125
+# r2 score :  0.5920551547030609

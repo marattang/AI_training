@@ -84,11 +84,11 @@ model.summary
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 es = EarlyStopping(mode='min', monitor='val_loss', patience=5)
-cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_7_MCP.hdf', save_best_only=True)
+cp = ModelCheckpoint(monitor='val_accuracy', mode='max', filepath='./_save/ModelCheckPoint/keras48_7_MCP.hdf', save_best_only=True)
 start = time.time()
 # model.fit(x_train, y_train, epochs=500, batch_size=512, validation_split=0.05, callbacks=[es, cp])
-model =load_model('./_save/ModelCheckPoint/keras48_7_model.h5')
-# model = load_model('./_save/ModelCheckPoint/keras48_7_MCP.hdf')
+# model =load_model('./_save/ModelCheckPoint/keras48_7_model.h5')
+model = load_model('./_save/ModelCheckPoint/keras48_7_MCP.hdf')
 end = time.time() - start
 
 # model.save('./_save/ModelCheckPoint/keras48_7_model.h5')
@@ -116,6 +116,19 @@ print('accuracy : ', loss[1])
 # loss :  0.3453387916088104
 # accuracy :  0.9063000082969666
 
+# val_loss기준
 # check point
 # loss :  0.2757481634616852
 # accuracy :  0.9024999737739563
+
+# model-2
+# loss :  0.3905464708805084
+# accuracy :  0.9078999757766724
+
+# load model-2
+# loss :  0.3905464708805084
+# accuracy :  0.9078999757766724
+
+# check point -2
+# loss :  0.30778437852859497
+# accuracy :  0.9065999984741211

@@ -43,8 +43,8 @@ x_predict = split_x(x_predict, size-1)
 x = dataset_x[:, :5]
 y = dataset_x[:, 5]
 
-# print("x : \n", x)
-# print("y : \n", y)
+print("x : \n", x)
+print("y : \n", y)
 # print("x_predict", dataset_x_predict)
 # 이해하기
 

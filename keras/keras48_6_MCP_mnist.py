@@ -69,7 +69,7 @@ model.add(Dense(10, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 es = EarlyStopping(mode='min', monitor='val_loss', patience=15)
-cp = ModelCheckpoint(monitor='val_loss', mode='auto', filepath='./_save/ModelCheckPoint/keras48_6_MCP.hdf', save_best_only=True)
+cp = ModelCheckpoint(monitor='val_accuracy', mode='max', filepath='./_save/ModelCheckPoint/keras48_6_MCP.hdf', save_best_only=True)
 start = time.time()
 # model.fit(x_train, y_train, epochs=500, batch_size=64, validation_split=0.05, callbacks=[es, cp])
 end = time.time() - start
@@ -107,6 +107,18 @@ print('accuracy : ', loss[1])
 # loss :  0.10130423307418823
 # accuracy :  0.9843000173568726
 
-# check point
+# check point : loss를 기준으로 checkpoint를 잡았기 때문에 loss가 작은 게 나왔지만, accuracy도 꼭 비례하지는 않는듯.
 # loss :  0.08582410216331482
 # accuracy :  0.9832000136375427
+
+# model-2
+# loss :  0.0906367152929306
+# accuracy :  0.9815000295639038
+
+# load model-2
+# loss :  0.0906367152929306
+# accuracy :  0.9815000295639038
+
+# check point-2
+# loss :  0.07735725492238998
+# accuracy :  0.9835000038146973
